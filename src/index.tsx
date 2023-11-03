@@ -5,17 +5,24 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
+import { Realtime } from "ably/promises";
+import { AblyProvider } from 'ably/react';
 import AreaChart from './AreaChart';
+import './scss/App.scss'
+
+const client = new Realtime({ key: process.env.ABLY_API_KEY || '' });
 
 function App() {
   return (
-    <Router basename={`${process.env.BASE_URL}`}>
-      <div className='main-content'>
-        <Routes>
-          <Route path={'/'} element={<AreaChart />} />
-        </Routes>
-      </div>
-    </Router>
+    <AblyProvider client={client}>
+      <Router>
+        <div className='main-content'>
+          <Routes>
+            <Route path={'/'} element={<AreaChart />} />
+          </Routes>
+        </div>
+      </Router>
+    </AblyProvider>
   );
 }
 

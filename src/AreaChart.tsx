@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { timeFormat, timeParse } from 'd3-time-format';
 import { format } from "d3-format";
 import { ChartCanvas, Chart, discontinuousTimeScaleProviderBuilder, AreaSeries,  XAxis, YAxis, ToolTipText, lastVisibleItemBasedZoomAnchor, CrossHairCursor, MouseCoordinateY, MouseCoordinateX, OHLCTooltip, EdgeIndicator } from 'react-financial-charts'
+import { Navbar, Container, Alert } from 'react-bootstrap';
 import useWindowSize from './hooks/useWindowSize';
+import { useChannel } from 'ably/react';
 
 type IOHLCData = {
   close: number;
@@ -23,13 +25,12 @@ type IOHLCResponseData = {
   v: number[];
 }
 
-const displayTimeFormat = '%Y-%m-%d %H-%M'
-const xAxisTimeDisplayFormat = '%d %b'
+const displayTimeFormat = '%Y-%m-%d %I-%M %p'
+const xAxisTimeDisplayFormat = '%d %b %I:%M %p'
 const yAxisTimeDisplayFormat = '.2f'
 
 const parseDate = (dateString: Date) => {
   const parsedDate = timeFormat(displayTimeFormat)(dateString);
-  console.log(parsedDate)
   if (parsedDate) {
     return parsedDate;
   } else {
@@ -57,16 +58,26 @@ const processData = (data: IOHLCResponseData): IOHLCData[] => {
 }
 
 const AreaChart = () => {
-  const margin = { left: 50, right: 50, top: 30, bottom: 30 }
+  const margin = { left: 0, right: 50, top: 30, bottom: 30 }
   const { width, height } = useWindowSize()
   const [areaChartData, setAreaChartData] = useState<IOHLCData[]>([])
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<string>('')
   const xScaleProvider = discontinuousTimeScaleProviderBuilder().inputDateAccessor(
     (d: IOHLCData) => timeParse(displayTimeFormat)(d.date as unknown as string) || new Date(),
   );
 
+  useChannel('aapl-stock-value',  (message: { data: IOHLCResponseData, timestamp: number }) => {
+    const updatedData = processData(message.data)
+    const timeStamp = new Date(message.timestamp)
+    setLastUpdatedAt(timeFormat(xAxisTimeDisplayFormat)(timeStamp))
+    setAreaChartData([...areaChartData, ...updatedData])
+  })
+
   useEffect(() => {
     fetch('/api/ohlc/AAPL').then(res => res.json()).then((data: IOHLCResponseData) => {
       setAreaChartData(processData(data))
+      const timeStamp = new Date()
+      setLastUpdatedAt(timeFormat(xAxisTimeDisplayFormat)(timeStamp))
     }).catch(err => {
       console.log(err)
     })
@@ -75,6 +86,7 @@ const AreaChart = () => {
   if (areaChartData.length === 0) {
     return null
   }
+
   const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(areaChartData);
   const pricesDisplayFormat = format(yAxisTimeDisplayFormat);
   const timeDisplayFormat = timeFormat(xAxisTimeDisplayFormat)
@@ -98,46 +110,58 @@ const AreaChart = () => {
   };
 
   return (
-    <div>
-      <ChartCanvas
-        height={height}
-        width={width}
-        ratio={1}
-        margin={margin}
-        data={data}
-        xScale={xScale}
-        xExtents={xExtents}
-        xAccessor={xAccessor}
-        displayXAccessor={displayXAccessor}
-        seriesName="OHLC Chart"
-        zoomAnchor={lastVisibleItemBasedZoomAnchor}
-      >
-        <Chart id={0} yExtents={yExtents}>
-          <XAxis showGridLines  />
-          <YAxis showGridLines tickFormat={pricesDisplayFormat} />
-          <AreaSeries yAccessor={yAccessor} />
-          <ToolTipText />
-          <CrossHairCursor />
-          <MouseCoordinateY
-            rectWidth={margin.right}
-            displayFormat={pricesDisplayFormat}
-          />
-          <MouseCoordinateX
-            rectWidth={margin.bottom}
-            displayFormat={timeDisplayFormat}
-          />
-          <OHLCTooltip origin={[8, 16]} />
-          <EdgeIndicator
-            itemType="last"
-            rectWidth={margin.right}
-            fill={openCloseColor}
-            lineStroke={openCloseColor}
-            displayFormat={pricesDisplayFormat}
-            yAccessor={yEdgeIndicator}
-          />
-        </Chart>
-      </ChartCanvas>
-    </div>
+    <>
+      <Navbar expand="lg" className="bg-body-tertiary">
+        <Container>
+          <Navbar.Brand href="/">Realtime Ably react-financial-charts</Navbar.Brand>
+        </Container>
+      </Navbar>
+      <Container>
+        <ChartCanvas
+          height={height}
+          width={width}
+          ratio={1}
+          margin={margin}
+          data={data}
+          xScale={xScale}
+          xExtents={xExtents}
+          xAccessor={xAccessor}
+          displayXAccessor={displayXAccessor}
+          seriesName="OHLC Chart"
+          zoomAnchor={lastVisibleItemBasedZoomAnchor}
+        >
+          <Chart id={0} yExtents={yExtents}>
+            <XAxis showGridLines  />
+            <YAxis showGridLines tickFormat={pricesDisplayFormat} />
+            <AreaSeries yAccessor={yAccessor} />
+            <ToolTipText />
+            <CrossHairCursor />
+            <MouseCoordinateY
+              rectWidth={margin.right}
+              displayFormat={pricesDisplayFormat}
+            />
+            <MouseCoordinateX
+              rectWidth={margin.bottom}
+              displayFormat={timeDisplayFormat}
+            />
+            <OHLCTooltip origin={[8, 16]} />
+            <EdgeIndicator
+              itemType="last"
+              rectWidth={margin.right}
+              fill={openCloseColor}
+              lineStroke={openCloseColor}
+              displayFormat={pricesDisplayFormat}
+              yAccessor={yEdgeIndicator}
+            />
+          </Chart>
+        </ChartCanvas>
+        {lastUpdatedAt && (<Alert variant={'light'}>
+          <Container>
+            <b>Last updated at: </b>{lastUpdatedAt}
+          </Container>
+        </Alert>)}
+      </Container>
+    </>
   );
 }
 

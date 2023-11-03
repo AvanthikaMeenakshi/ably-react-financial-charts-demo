@@ -21,9 +21,26 @@ function useWindowSize() {
     };
   }, []);
 
+  let width;
+  let height;
+
+  if (windowSize.width <= 600) {
+    // For mobile (width less than or equal to 600 pixels), use full width.
+    width = windowSize.width;
+    height = windowSize.height;
+  } else if (windowSize.width <= 1024) {
+    // For tablets (width less than or equal to 1024 pixels), use 90% of the width.
+    width = Math.floor(0.9 * windowSize.width);
+    height =  Math.floor(0.9 * windowSize.height)
+  } else {
+    // For desktop devices, use 70% of the width.
+    width = Math.floor(0.7 * windowSize.width);
+    height =  Math.floor(0.7 * windowSize.height)
+  }
+
   return {
-    width: windowSize.width - 60,
-    height: windowSize.height - 60
+    width,
+    height
   };
 }
 

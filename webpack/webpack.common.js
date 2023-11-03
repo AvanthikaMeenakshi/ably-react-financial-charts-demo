@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
+const { ProvidePlugin } = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -46,6 +47,9 @@ module.exports = {
       template: path.join(__dirname, "../src/index.html"),
     }),
     new MiniCssExtractPlugin(),
+    new ProvidePlugin({
+      process: "process/browser",
+    }),
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
