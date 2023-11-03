@@ -113,7 +113,7 @@ const AreaChart = () => {
         zoomAnchor={lastVisibleItemBasedZoomAnchor}
       >
         <Chart id={0} yExtents={yExtents}>
-          <XAxis showGridLines tickFormat={timeDisplayFormat}  />
+          <XAxis showGridLines  />
           <YAxis showGridLines tickFormat={pricesDisplayFormat} />
           <AreaSeries yAccessor={yAccessor} />
           <ToolTipText />
