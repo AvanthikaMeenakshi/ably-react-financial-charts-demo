@@ -1,7 +1,7 @@
 {
   "name": "ably-react-stockcharts",
   "version": "1.0.0",
-  "description": "Real-time stockcharts updates with Ably",
+  "description": "Real-time react-financial-charts updates with Ably",
   "scripts": {
     "dev": "webpack serve --config ./webpack/webpack.config.dev.js",
     "build": "rm -rf dist && webpack --config ./webpack/webpack.config.prod.js",

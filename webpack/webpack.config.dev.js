@@ -13,8 +13,6 @@ const envKeys = Object.keys(env).reduce((prev, next) => {
   return prev;
 }, {});
 
-console.log(envKeys);
-
 module.exports = merge(commonConfig, {
   mode: "development",
   devServer: {

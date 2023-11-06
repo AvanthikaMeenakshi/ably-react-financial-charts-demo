@@ -34,8 +34,8 @@ function useWindowSize() {
     height =  Math.floor(0.9 * windowSize.height)
   } else {
     // For desktop devices, use 70% of the width.
-    width = Math.floor(0.7 * windowSize.width);
-    height =  Math.floor(0.7 * windowSize.height)
+    width = Math.floor(0.6 * windowSize.width);
+    height =  Math.floor(0.6 * windowSize.height)
   }
 
   return {

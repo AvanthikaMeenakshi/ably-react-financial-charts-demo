@@ -2,28 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { timeFormat, timeParse } from 'd3-time-format';
 import { format } from "d3-format";
 import { ChartCanvas, Chart, discontinuousTimeScaleProviderBuilder, AreaSeries,  XAxis, YAxis, ToolTipText, lastVisibleItemBasedZoomAnchor, CrossHairCursor, MouseCoordinateY, MouseCoordinateX, OHLCTooltip, EdgeIndicator } from 'react-financial-charts'
-import { Navbar, Container, Alert } from 'react-bootstrap';
+import { Container, Alert } from 'react-bootstrap';
 import useWindowSize from './hooks/useWindowSize';
 import { useChannel } from 'ably/react';
-
-type IOHLCData = {
-  close: number;
-  date: Date | string;
-  high: number;
-  low: number;
-  open: number;
-  volume: number;
-}
-
-type IOHLCResponseData = {
-  c: number[];
-  h: number[];
-  l: number[];
-  o: number[];
-  s: string;
-  t: number[];
-  v: number[];
-}
+import { IOHLCResponseData, IOHLCData } from './types';
 
 const displayTimeFormat = '%Y-%m-%d %I-%M %p'
 const xAxisTimeDisplayFormat = '%d %b %I:%M %p'
@@ -75,9 +57,10 @@ const AreaChart = () => {
 
   useEffect(() => {
     fetch('/api/ohlc/AAPL').then(res => res.json()).then((data: IOHLCResponseData) => {
-      setAreaChartData(processData(data))
-      const timeStamp = new Date()
-      setLastUpdatedAt(timeFormat(xAxisTimeDisplayFormat)(timeStamp))
+      const areaChartProcessedData = processData(data)
+      setAreaChartData(areaChartProcessedData)
+      const lastUpdateDate = timeParse(displayTimeFormat)(areaChartProcessedData[areaChartProcessedData.length - 1].date as unknown as string) || new Date()
+      setLastUpdatedAt(timeFormat(xAxisTimeDisplayFormat)(lastUpdateDate))
     }).catch(err => {
       console.log(err)
     })
@@ -111,12 +94,7 @@ const AreaChart = () => {
 
   return (
     <>
-      <Navbar expand="lg" className="bg-body-tertiary">
-        <Container>
-          <Navbar.Brand href="/">Realtime Ably react-financial-charts</Navbar.Brand>
-        </Container>
-      </Navbar>
-      <Container>
+      <Container style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <ChartCanvas
           height={height}
           width={width}
@@ -156,9 +134,7 @@ const AreaChart = () => {
           </Chart>
         </ChartCanvas>
         {lastUpdatedAt && (<Alert variant={'light'}>
-          <Container>
-            <b>Last updated at: </b>{lastUpdatedAt}
-          </Container>
+          <b>Last updated at: </b>{lastUpdatedAt}
         </Alert>)}
       </Container>
     </>
