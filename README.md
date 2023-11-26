@@ -24,4 +24,4 @@ Additionally, you need to clone and run the [backend-service](https://github.com
    npm run dev
    ```
 
-![Demo](https://github.com/AvanthikaMeenakshi/ably-react-financial-charts-demo/assets/14136164/9aa36964-5c6d-46b6-a1c9-94c3f7f39833)
+![demo](https://github.com/AvanthikaMeenakshi/ably-react-financial-charts-demo/assets/14136164/98481b74-b2a8-4542-a468-a87c0a5d1639)
