@@ -10,7 +10,7 @@ import { AblyProvider } from 'ably/react';
 import AreaChart from './AreaChart';
 import './scss/App.scss'
 
-const client = new Realtime({ key: process.env.ABLY_API_KEY || '' });
+const client = new Realtime({ key: import.meta.env.VITE_ABLY_API_KEY_CLIENT || '' });
 
 function App() {
   return (
