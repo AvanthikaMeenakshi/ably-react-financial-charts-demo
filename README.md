@@ -2,7 +2,6 @@
 
 Demo app to update financial chart in realtime using Ably pub/sub.
 To run this application, you will need [finnhub.io](https://finnhub.io/docs/api) and [Ably](https://ably.com/sign-up) API keys.
-Additionally, you need to clone and run the [backend-service](https://github.com/AvanthikaMeenakshi/ably-node-demo). The service's README provides detailed setup instructions.
 
 ## Installation and running
 
@@ -15,10 +14,12 @@ Additionally, you need to clone and run the [backend-service](https://github.com
 2. To run the application locally, you need to create a `.env` file with your Ably API key. Add the following line to the `.env` file:
 
    ```
-   ABLY_API_KEY=<YOUR_API_KEY>
+   VITE_ABLY_API_KEY_CLIENT=<API_KEY_WITH_READ_ONLY_ACCESS>
+   VITE_FINNHUB_API_KEY=<FINNHUB_API_KEY>
+   VITE_ABLY_API_KEY_SERVER=<API_KEY_WITH_READ_AND_WRITE_ACCESS>
    ```
 
-3. Execute the following command to run the application locally. It will be accessible at [localhost:8080](http://localhost:8080/):
+3. Execute the following command to run the application locally. It will be accessible at [localhost:3000](http://localhost:3000/):
 
    ```bash
    npm run dev
