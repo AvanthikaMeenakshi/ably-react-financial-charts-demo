@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { timeFormat, timeParse } from 'd3-time-format';
 import { format } from "d3-format";
 import { ChartCanvas, Chart, discontinuousTimeScaleProviderBuilder, AreaSeries,  XAxis, YAxis, ToolTipText, lastVisibleItemBasedZoomAnchor, CrossHairCursor, MouseCoordinateY, MouseCoordinateX, OHLCTooltip, EdgeIndicator } from 'react-financial-charts'
-import { Container, Alert } from 'react-bootstrap';
 import useWindowSize from './hooks/useWindowSize';
 import { useChannel } from 'ably/react';
 import { IOHLCResponseData, IOHLCData } from './types';
@@ -93,51 +92,49 @@ const AreaChart = () => {
   };
 
   return (
-    <>
-      <Container style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <ChartCanvas
-          height={height}
-          width={width}
-          ratio={1}
-          margin={margin}
-          data={data}
-          xScale={xScale}
-          xExtents={xExtents}
-          xAccessor={xAccessor}
-          displayXAccessor={displayXAccessor}
-          seriesName="OHLC Chart"
-          zoomAnchor={lastVisibleItemBasedZoomAnchor}
-        >
-          <Chart id={0} yExtents={yExtents}>
-            <XAxis showGridLines  />
-            <YAxis showGridLines tickFormat={pricesDisplayFormat} />
-            <AreaSeries yAccessor={yAccessor} />
-            <ToolTipText />
-            <CrossHairCursor />
-            <MouseCoordinateY
-              rectWidth={margin.right}
-              displayFormat={pricesDisplayFormat}
-            />
-            <MouseCoordinateX
-              rectWidth={margin.bottom}
-              displayFormat={timeDisplayFormat}
-            />
-            <OHLCTooltip origin={[8, 16]} />
-            <EdgeIndicator
-              itemType="last"
-              rectWidth={margin.right}
-              fill={openCloseColor}
-              lineStroke={openCloseColor}
-              displayFormat={pricesDisplayFormat}
-              yAccessor={yEdgeIndicator}
-            />
-          </Chart>
-        </ChartCanvas>
-        {lastUpdatedAt && (<Alert variant={'light'}>
-          <b>Last updated at: </b>{lastUpdatedAt}
-        </Alert>)}
-      </Container>
-    </>
+    <div style={{ height: '100vh', width: '100vw' }}>
+      <ChartCanvas
+        height={height}
+        width={width}
+        ratio={1}
+        margin={margin}
+        data={data}
+        xScale={xScale}
+        xExtents={xExtents}
+        xAccessor={xAccessor}
+        displayXAccessor={displayXAccessor}
+        seriesName="OHLC Chart"
+        zoomAnchor={lastVisibleItemBasedZoomAnchor}
+      >
+        <Chart id={0} yExtents={yExtents}>
+          <XAxis showGridLines  />
+          <YAxis showGridLines tickFormat={pricesDisplayFormat} />
+          <AreaSeries yAccessor={yAccessor} />
+          <ToolTipText />
+          <CrossHairCursor />
+          <MouseCoordinateY
+            rectWidth={margin.right}
+            displayFormat={pricesDisplayFormat}
+          />
+          <MouseCoordinateX
+            rectWidth={margin.bottom}
+            displayFormat={timeDisplayFormat}
+          />
+          <OHLCTooltip origin={[8, 16]} />
+          <EdgeIndicator
+            itemType="last"
+            rectWidth={margin.right}
+            fill={openCloseColor}
+            lineStroke={openCloseColor}
+            displayFormat={pricesDisplayFormat}
+            yAccessor={yEdgeIndicator}
+          />
+        </Chart>
+      </ChartCanvas>
+      {lastUpdatedAt && (<div>
+        <b>Last updated at: </b>{lastUpdatedAt}
+      </div>)}
+    </div>
   );
 }
 
